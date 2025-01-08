@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Room Template</title>
+    <style>
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+
+      #input:focus {
+        outline: none;
+      }
+
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      #messages > li {
+        padding: 0.5rem 1rem;
+      }
+
+      #messages > li:nth-child(odd) {
+        background: #efefef;
+      }
+
+      .room-info {
+        padding: 1rem;
+        background: #333;
+        color: white;
+      }
+
+      .nav {
+        padding: 1rem;
+      }
+
+      .nav a {
+        color: #333;
+        text-decoration: none;
+        margin-right: 1rem;
+      }
+
+      .nav a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="room-info">
+      <h2>Room <span id="room-name"></span></h2>
+      <p>Connected users: <span id="user-count">0</span></p>
+    </div>
+    <div class="nav">
+      <a href="/">Home</a>
+      <a href="/room1">Room 1</a>
+      <a href="/room2">Room 2</a>
+    </div>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Type a message..." />
+      <button>Send</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const room = window.location.pathname.substring(1);
+      document.getElementById("room-name").textContent = room;
+
+      const socket = io("/admin");
+      const messages = document.getElementById("messages");
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+
+      // Join room on connection
+      socket.on("connect", () => {
+        socket.emit("join", { room });
+      });
+
+      // Listen for server messages
+      socket.on("server message", (data) => {
+        console.log(data);
+      });
+
+      // Handle form submission
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit("chat message", {
+            msg: input.value,
+            room: room,
+          });
+          input.value = "";
+        }
+      });
+
+      // Display received messages
+      socket.on("chat message", function (msg) {
+        const item = document.createElement("li");
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      // Update user count
+      socket.on("user count", function (count) {
+        document.getElementById("user-count").textContent = count;
+      });
+    </script>
+  </body>
+</html>

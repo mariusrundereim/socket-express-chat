@@ -56,16 +56,29 @@
     </style>
   </head>
   <body>
+    <div>
+      <p>Select room</p>
+      <ul>
+        <a href="/room1">Room 1</a>
+        <a href="/room2">Room 2</a>
+      </ul>
+    </div>
     <ul id="messages"></ul>
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io();
+      var socket = io("/admin");
+
       socket.on("server message", (data) => {
         console.log(data);
       });
+
+      socket.join("some room");
+      socket.leave("some room");
+
+      admin.to("some room").emit("some text");
 
       var form = document.getElementById("form");
       var input = document.getElementById("input");
@@ -76,6 +89,13 @@
           socket.emit("chat message", input.value);
           input.value = "";
         }
+      });
+
+      socket.on("chat message", function (msg) {
+        var item = document.createElement("li");
+        item.textContent = msg;
+        document.getElementById("messages").appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
       });
     </script>
   </body>
