@@ -2,58 +2,7 @@
 <html>
   <head>
     <title>Socket.IO chat</title>
-    <style>
-      body {
-        margin: 0;
-        padding-bottom: 3rem;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
-      }
-
-      #form {
-        background: rgba(0, 0, 0, 0.15);
-        padding: 0.25rem;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        height: 3rem;
-        box-sizing: border-box;
-        backdrop-filter: blur(10px);
-      }
-      #input {
-        border: none;
-        padding: 0 1rem;
-        flex-grow: 1;
-        border-radius: 2rem;
-        margin: 0.25rem;
-      }
-      #input:focus {
-        outline: none;
-      }
-      #form > button {
-        background: #333;
-        border: none;
-        padding: 0 1rem;
-        margin: 0.25rem;
-        border-radius: 3px;
-        outline: none;
-        color: #fff;
-      }
-
-      #messages {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-      }
-      #messages > li {
-        padding: 0.5rem 1rem;
-      }
-      #messages > li:nth-child(odd) {
-        background: #efefef;
-      }
-    </style>
+    <link rel="stylesheet" href="/styles/main.css" />
   </head>
   <body>
     <div>
@@ -63,6 +12,10 @@
         <a href="/room2">Room 2</a>
       </ul>
     </div>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Type a message..." />
+      <button>Send</button>
+    </form>
     <ul id="messages"></ul>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -71,11 +24,6 @@
       socket.on("server message", (data) => {
         console.log(data);
       });
-
-      socket.join("some room");
-      socket.leave("some room");
-
-      admin.to("some room").emit("some text");
 
       var form = document.getElementById("form");
       var input = document.getElementById("input");

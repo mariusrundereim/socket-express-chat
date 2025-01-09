@@ -11,6 +11,9 @@ const io = new Server(server);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Static files from public directory
+app.use(express.static("public"));
+
 // Track users in rooms
 const rooms = {
   room1: new Set(),
